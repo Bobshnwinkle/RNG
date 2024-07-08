@@ -3,6 +3,7 @@
 #include <iostream>
 #include <ctime>
 #include <cmath>
+#include <intrin.h>
 
 using namespace std;
 class fstRand {
@@ -21,13 +22,6 @@ public:
 		return out;
 	}
 private:
-	template <typename T>
-	static void printArray(vector<T> arr) {
-		for (size_t i = 0; i < arr.size(); i++) {
-			cout << i << ": " << arr[i] << endl;
-		}
-	}
-
 	float seed = 0.287124634;
 #ifdef _WIN32
 	static uint64_t rdtsc() {
