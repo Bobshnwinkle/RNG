@@ -1,0 +1,8 @@
+test.exe
+test.ilk
+test.obj
+test.pdb
+vc140.pdb
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/tasks.json

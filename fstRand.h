@@ -24,12 +24,12 @@ public:
 private:
 	float seed = 0.287124634;
 #ifdef _WIN32
-	static uint64_t rdtsc() {
+	static uint64_t rdtsc() { //get last 4 values of cycle count for windows
 		auto val = __rdtsc();
 		return val % 10000;
 	}
 #else
-	static uint64_t rdtsc() {
+	static uint64_t rdtsc() { //get last 4 values of cycle count for linux
 		unsigned int lo, hi;
 		__asm__ __volatile__("rdtsc" : "=a" (lo), "=d" (hi));
 		auto val = ((uint64_t)hi << 32) | lo;
