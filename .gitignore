@@ -6,3 +6,4 @@ vc140.pdb
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/tasks.json
+run.sh
