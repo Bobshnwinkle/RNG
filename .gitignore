@@ -7,3 +7,5 @@ vc140.pdb
 .vscode/launch.json
 .vscode/tasks.json
 run.sh
+program
+.vscode/settings.json

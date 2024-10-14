@@ -3,7 +3,9 @@
 #include <iostream>
 #include <ctime>
 #include <cmath>
+#ifdef _WIN32
 #include <intrin.h>
+#endif
 
 using namespace std;
 class fstRand {
