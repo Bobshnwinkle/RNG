@@ -22,4 +22,4 @@ or
 ```
 auto RNG  = new fstRand(_float seed_); //to use a pre-defined seed
 ```
-NOTE: the seed will not garuntee the chain of values generated, as entropy is taken from the cycle count and not the seed along
+NOTE: the seed will not garuntee the chain of values generated, as entropy is taken from the cycle count and not the seed alone
