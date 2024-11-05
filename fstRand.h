@@ -3,6 +3,7 @@
 #include <iostream>
 #include <ctime>
 #include <cmath>
+#include <cstdint>
 #ifdef _WIN32
 #include <intrin.h>
 #endif
