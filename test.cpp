@@ -1,4 +1,5 @@
 #include "./fstRand.h"
+#include <chrono>
 
 #define ushort unsigned short
 
@@ -16,21 +17,23 @@ class localTools{
         float interQuartileRange;
     };
 
+    struct ValStats{
+        vector<float> values;
+        vector<float> times;
+        Stats valueStats;
+        Stats timeStats;
+    };
+
     public:
     static Stats ProcessValues(vector<float> vals){
         vals = quickSort(vals);
         float tot = 0;
         for (ushort i = 0; i < vals.size(); i++){
             tot += vals[i];
-            cout << i + 1 << " : " << vals[i] << endl;
         }
 
         ushort length = vals.size();
 
-        cout << endl << "Generated " + to_string(length) + " values" << endl;
-        cout << "Min " << vals[0] << endl;
-        cout << "Max " << vals[length - 1] << endl;
-        cout << "Mean " << tot/length << endl;
         float median = 0;
         if (length % 2 == 0){
             median = (vals[length / 2] + vals[(length / 2) - 1]) / 2;
@@ -38,12 +41,8 @@ class localTools{
         else{
             median = vals[length / 2];
         }
-        cout << "Median " << median << endl;
         float LQ = vals[length / 4];
         float UQ = vals[length - (length / 4)];
-        cout << "Lower Quartile " << LQ << endl;
-        cout << "Upper Quartile " << UQ << endl;
-        cout << "Inter-quartile range " << UQ - LQ << endl;
         return {vals[0], vals[length - 1], tot/length, median, LQ, UQ, UQ - LQ};
     }
 
@@ -61,13 +60,33 @@ class localTools{
         left.insert(left.end(), right.begin(), right.end());
         return left;
     }
+
+    static void PrintStats(Stats stats){
+        cout << "Min: " << stats.min << endl;
+        cout << "Max: " << stats.max << endl;
+        cout << "Mean: " << stats.mean << endl;
+        cout << "Median: " << stats.median << endl;
+        cout << "Lower Quartile: " << stats.lowerQuartile << endl;
+        cout << "Upper Quartile: " << stats.upperQuartile << endl;
+        cout << "Inter-Quartile Range: " << stats.interQuartileRange << endl;
+    }
 };
 
 int main(){
     vector<float> vals;
+    vector<float> times;
     auto rnd = new fstRand();
     for (ushort i = 0; i < 1000; i++){
+        auto start = chrono::high_resolution_clock::now();
         vals.push_back(rnd->Next());
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
+        times.push_back(duration.count());
     }
-    localTools::ProcessValues(vals);
+    auto valStats = localTools::ProcessValues(vals);
+    auto timeStats = localTools::ProcessValues(times);
+    cout << "Value Stats: " << endl;
+    localTools::PrintStats(valStats);
+    cout << "Time Stats: " << endl;
+    localTools::PrintStats(timeStats);
 }
