@@ -5,8 +5,19 @@
 using namespace std;
 
 class localTools{
+
+    struct Stats{
+        float min;
+        float max;
+        float mean;
+        float median;
+        float lowerQuartile;
+        float upperQuartile;
+        float interQuartileRange;
+    };
+
     public:
-    static void ProcessValues(vector<float> vals){
+    static Stats ProcessValues(vector<float> vals){
         vals = quickSort(vals);
         float tot = 0;
         for (ushort i = 0; i < vals.size(); i++){
@@ -33,6 +44,7 @@ class localTools{
         cout << "Lower Quartile " << LQ << endl;
         cout << "Upper Quartile " << UQ << endl;
         cout << "Inter-quartile range " << UQ - LQ << endl;
+        return {vals[0], vals[length - 1], tot/length, median, LQ, UQ, UQ - LQ};
     }
 
     static vector<float> quickSort(vector<float> vals){
