@@ -7,7 +7,7 @@ using namespace std;
 class localTools{
     public:
     static void ProcessValues(vector<float> vals){
-        vals = bubbleSort(vals);
+        vals = quickSort(vals);
         float tot = 0;
         for (ushort i = 0; i < vals.size(); i++){
             tot += vals[i];
@@ -35,22 +35,19 @@ class localTools{
         cout << "Inter-quartile range " << UQ - LQ << endl;
     }
 
-    static vector<float> bubbleSort(vector<float> vals){
-        float c = 0;
-        bool clear = false;
-        while (!clear){
-            clear = true;
-            for (ushort i = 0; i < vals.size(); i++){
-                c = vals[i];
-                if (i + 1 == vals.size()) break;
-                if (vals[i + 1] < c){
-                    clear = false;
-                    vals[i] = vals[i + 1];
-                    vals[i + 1] = c;
-                }
-            }
+    static vector<float> quickSort(vector<float> vals){
+        if (vals.size() <= 1) return vals;
+        vector<float> left, right;
+        float pivot = vals[0];
+        for (ushort i = 1; i < vals.size(); i++){
+            if (vals[i] < pivot) left.push_back(vals[i]);
+            else right.push_back(vals[i]);
         }
-        return vals;
+        left = quickSort(left);
+        right = quickSort(right);
+        left.push_back(pivot);
+        left.insert(left.end(), right.begin(), right.end());
+        return left;
     }
 };
 
