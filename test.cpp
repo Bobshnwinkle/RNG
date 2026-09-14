@@ -225,7 +225,7 @@ int main(){
         auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
         times.push_back(duration.count());
         // gotoxy(0, 0);
-        cout << "\r" << i + 1 << " / 1000   0";
+        cout << "\r" << i + 1 << " / 10000";
         // cout << "\nValue Stats: " << endl;
         // localTools::PrintStats(vals);
         // cout << "\nTime Stats: " << endl;
