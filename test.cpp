@@ -76,7 +76,7 @@ class localTools{
         cout << "Lower Quartile: " << stats.lowerQuartile << endl;
         cout << "Upper Quartile: " << stats.upperQuartile << endl;
         cout << "Inter-Quartile Range: " << stats.interQuartileRange << endl;
-        PrintGraph(vals, stats, 0.25);
+        PrintGraph(vals, stats, 5, 0.25);
     }
 
     static Size GetSize(){
@@ -86,7 +86,7 @@ class localTools{
     }
 
     static float ReScale(float value, float oldMax, float newMax){
-        return (value / oldMax) * newMax;
+        return value * (newMax/oldMax);
     }
 
     static string GetBlock(float frac){
@@ -104,12 +104,14 @@ class localTools{
         }
     }
 
-    static void PrintGraph(vector<float> vals, Stats stats, float height = 0.3){
+    static void PrintGraph(vector<float> vals, Stats stats, ushort DP = 3, float height = 0.3){
         auto size = GetSize();
-        uint Swidth = size.width;
-        uint Sheight = size.height * height;
+        int Swidth = size.width;
+        int Sheight = size.height * height;
 
-        ushort activeCols = Swidth - 1;
+        ushort borderFromLeft = DP;
+
+        ushort activeCols = Swidth - borderFromLeft;
 
         vector<uint> columns(activeCols, 0);
 
@@ -122,27 +124,69 @@ class localTools{
             columns[col]++;
         }
 
-        float colMax = 0;
+        int colMax = 0;
         for (int i = 0; i < columns.size(); i++){
             if (columns[i] > colMax){
                 colMax = columns[i];
             }
         }
 
+        uint LQ = ReScale(stats.lowerQuartile, stats.max, activeCols - 1);
+        uint Mean = ReScale(stats.mean, stats.max, activeCols - 1);
+        uint Median = ReScale(stats.median, stats.max, activeCols - 1);
+        uint UQ = ReScale(stats.upperQuartile, stats.max, activeCols - 1);
+
+
+        ushort borderFromBottom = 1;
+        string colsLabel = to_string(colMax);
+        string rowsLabel = to_string(stats.max);
+
+        while (colsLabel.size() < DP){
+            colsLabel = ' ' + colsLabel;
+        }
+
         for (int y = Sheight - 1; y >= 0; y--){
             string text = "";
             for (int x = 0; x < Swidth; x++){
-                if (x == 0 && y == 0){
+                if (x < borderFromLeft){
+                    //to left of Y axis
+                    if (y == borderFromBottom && x == borderFromLeft - 1){
+                        text += '0';
+                    }
+                    else if (y == Sheight - 1){
+                        text += colsLabel[x];
+                    }
+                    else{
+                        text += ' ';
+                    }
+                }
+                else if(y < borderFromBottom){
+                    //below X axis
+                    if (x == borderFromLeft && y == borderFromBottom - 1){
+                        text += '0';
+                    }
+                    else if (Swidth - x <= rowsLabel.size()){
+                        text += rowsLabel[(x - Swidth) + rowsLabel.size()];
+                    }
+                    else if (x == Mean + borderFromLeft) text += "M";
+                    else if (x == Median + borderFromLeft) text += "m";
+                    else if (x == UQ + borderFromLeft) text += "U";
+                    else if (x == LQ + borderFromLeft) text += "L";
+                    else{
+                        text += ' ';
+                    }
+                }
+                else if (x == borderFromLeft && y == borderFromBottom){
                     text += "+";
                 }
-                else if (y == 0){
+                else if (y == borderFromBottom){
                     text += "-";
                 }
-                else if (x == 0){
+                else if (x == borderFromLeft){
                     text += "|";
                 }
                 else{
-                    auto height = ReScale(columns[x - 1], colMax, Sheight - 1);
+                    auto height = ReScale(columns[x - borderFromLeft], colMax, Sheight - borderFromBottom);
                     int_fast64_t W = floor(height);
                     float F = height - W;
                     // cout << "height: " << height << " , W: " << W << " , F: " << F << " , y: " << y << endl;
@@ -151,7 +195,13 @@ class localTools{
                             text += GetBlock(F);
                         }
                         else{
-                            text += "\u2588";
+                            if (x == Mean + borderFromLeft) text += "\u2592";
+                            else if (x == Median + borderFromLeft) text += "\u2592";
+                            else if (x == UQ + borderFromLeft) text += "\u2592";
+                            else if (x == LQ + borderFromLeft) text += "\u2592";
+                            else{
+                                text += "\u2588";
+                            }
                         }
                     }
                     else{
@@ -168,14 +218,14 @@ int main(){
     vector<float> vals;
     vector<float> times;
     auto rnd = new fstRand();
-    for (ushort i = 0; i < 10000; i++){
+    for (uint i = 0; i < 10000; i++){
         auto start = chrono::high_resolution_clock::now();
         vals.push_back(rnd->Next());
         auto end = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
         times.push_back(duration.count());
         // gotoxy(0, 0);
-        cout << "\r" << i + 1 << " / 10000";
+        cout << "\r" << i + 1 << " / 1000   0";
         // cout << "\nValue Stats: " << endl;
         // localTools::PrintStats(vals);
         // cout << "\nTime Stats: " << endl;
