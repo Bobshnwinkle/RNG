@@ -201,7 +201,7 @@ class localTools{
                             if (x == Mean + borderFromLeft) text += "\e[0;34m";
                             else if (x == Median + borderFromLeft) text += "\e[0;32m";
                             else if (x == UQ + borderFromLeft) text += "\e[0;33m";
-                            else if (x == LQ + borderFromLeft) text += "\e[0;31ma";
+                            else if (x == LQ + borderFromLeft) text += "\e[0;31m";
                             text += GetBlock(F);
                             text += "\e[0m";
                         }
