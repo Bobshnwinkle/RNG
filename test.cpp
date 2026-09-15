@@ -68,14 +68,14 @@ class localTools{
 
     static void PrintStats(vector<double> vals){
         auto stats = ProcessValues(vals);
-        cout << "Count: " << stats.count << endl;
-        cout << "Min: " << stats.min << endl;
-        cout << "Max: " << stats.max << endl;
-        cout << "Mean: " << stats.mean << endl;
-        cout << "Median: " << stats.median << endl;
-        cout << "Lower Quartile: " << stats.lowerQuartile << endl;
-        cout << "Upper Quartile: " << stats.upperQuartile << endl;
-        cout << "Inter-Quartile Range: " << stats.interQuartileRange << endl;
+        cout << "Count: " << stats.count << "\033[K" << endl;
+        cout << "Min: " << stats.min << "\033[K" << endl;
+        cout << "Max: " << stats.max << "\033[K" << endl;
+        cout << "Mean: " << stats.mean << "\033[K" << endl;
+        cout << "Median: " << stats.median << "\033[K" << endl;
+        cout << "Lower Quartile: " << stats.lowerQuartile << "\033[K" << endl;
+        cout << "Upper Quartile: " << stats.upperQuartile << "\033[K" << endl;
+        cout << "Inter-Quartile Range: " << stats.interQuartileRange << "\033[K" << endl;
         PrintGraph(vals, stats, 5, 0.25);
     }
 
@@ -92,14 +92,14 @@ class localTools{
     static string GetBlock(float frac){
         int oct = floor(frac * 8);
         switch(oct){
-            case 0: return " ";
-            case 1: return "\u2581";
-            case 2: return "\u2582";
-            case 3: return "\u2583";
-            case 4: return "\u2584";
-            case 5: return "\u2585";
-            case 6: return "\u2586";
-            case 7: return"\u2587";
+            case 0: return "\u2581";
+            case 1: return "\u2582";
+            case 2: return "\u2583";
+            case 3: return "\u2584";
+            case 4: return "\u2585";
+            case 5: return "\u2586";
+            case 6: return "\u2587";
+            case 7: return"\u2588";
             default: return "\u2588";
         }
     }
@@ -147,7 +147,7 @@ class localTools{
 
         for (int y = Sheight - 1; y >= 0; y--){
             string text = "";
-            for (int x = 0; x < Swidth; x++){
+            for (int x = 0; x < Swidth - 1; x++){
                 if (x < borderFromLeft){
                     //to left of Y axis
                     if (y == borderFromBottom && x == borderFromLeft - 1){
@@ -180,10 +180,10 @@ class localTools{
                     text += "\u253C";
                 }
                 else if (y == borderFromBottom){
-                    if (x == Mean + borderFromLeft) text += "\u2542";
-                    else if (x == Median + borderFromLeft) text += "\u2542";
-                    else if (x == UQ + borderFromLeft) text += "\u2542";
-                    else if (x == LQ + borderFromLeft) text += "\u2542";
+                    if (x == Mean + borderFromLeft) text += "\u253C";
+                    else if (x == Median + borderFromLeft) text += "\u253C";
+                    else if (x == UQ + borderFromLeft) text += "\u253C";
+                    else if (x == LQ + borderFromLeft) text += "\u253C";
                     else{
                         text += "\u2500";
                     }
@@ -220,7 +220,7 @@ class localTools{
                     }
                 }
             }
-            cout << text << endl;
+            cout << text << "\033[K" << endl;
         }
     }
 };
@@ -229,19 +229,25 @@ int main(){
     vector<double> vals;
     vector<double> times;
     auto rnd = new fstRand();
+    auto lastDraw = chrono::steady_clock::now();
+
     for (uint i = 0; i < 10000; i++){
         auto start = chrono::high_resolution_clock::now();
         vals.push_back(rnd->Next());
         auto end = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::nanoseconds>(end - start);
         times.push_back(duration.count());
+        auto now = chrono::steady_clock::now();
+        if (now - lastDraw >= chrono::milliseconds(50) || i + 1 == 10000){
+            lastDraw = noew;
+        }
         // gotoxy(0, 0);
-        cout << "\r" << i + 1 << " / 10000";
+        // cout << "\r" << i + 1 << " / 10000";
         // cout << "\nValue Stats: " << endl;
         // localTools::PrintStats(vals);
         // cout << "\nTime Stats: " << endl;
         // localTools::PrintStats(times);
-        // cout << endl;
+        // cout << "\033[H" << endl;
     }
     cout << "\nValue Stats: " << endl;
     localTools::PrintStats(vals);
