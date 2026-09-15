@@ -12,13 +12,13 @@ class localTools{
 
     struct Stats{
         ulong count;
-        float min;
-        float max;
-        float mean;
-        float median;
-        float lowerQuartile;
-        float upperQuartile;
-        float interQuartileRange;
+        double min;
+        double max;
+        double mean;
+        double median;
+        double lowerQuartile;
+        double upperQuartile;
+        double interQuartileRange;
     };
 
     struct Size{
@@ -28,34 +28,34 @@ class localTools{
 
     public:
 
-    static Stats ProcessValues(vector<float> vals){
+    static Stats ProcessValues(vector<double> vals){
         vals = quickSort(vals);
 
-        float max = vals[vals.size() - 1];
-        float tot = 0;
-        for (ushort i = 0; i < vals.size(); i++){
+        double max = vals[vals.size() - 1];
+        double tot = 0;
+        for (uint i = 0; i < vals.size(); i++){
             tot += vals[i];
         }
 
         ushort length = vals.size();
 
-        float median = 0;
+        double median = 0;
         if (length % 2 == 0){
             median = (vals[length / 2] + vals[(length / 2) - 1]) / 2;
         }
         else{
             median = vals[length / 2];
         }
-        float LQ = vals[length / 4];
-        float UQ = vals[length - (length / 4)];
+        double LQ = vals[length / 4];
+        double UQ = vals[length - (length / 4)];
         return {vals.size(), vals[0], vals[length - 1], tot/length, median, LQ, UQ, UQ - LQ};
     }
 
-    static vector<float> quickSort(vector<float> vals){
+    static vector<double> quickSort(vector<double> vals){
         if (vals.size() <= 1) return vals;
-        vector<float> left, right;
-        float pivot = vals[0];
-        for (ushort i = 1; i < vals.size(); i++){
+        vector<double> left, right;
+        double pivot = vals[0];
+        for (uint i = 1; i < vals.size(); i++){
             if (vals[i] < pivot) left.push_back(vals[i]);
             else right.push_back(vals[i]);
         }
@@ -66,7 +66,7 @@ class localTools{
         return left;
     }
 
-    static void PrintStats(vector<float> vals){
+    static void PrintStats(vector<double> vals){
         auto stats = ProcessValues(vals);
         cout << "Count: " << stats.count << endl;
         cout << "Min: " << stats.min << endl;
@@ -104,7 +104,7 @@ class localTools{
         }
     }
 
-    static void PrintGraph(vector<float> vals, Stats stats, ushort DP = 3, float height = 0.3){
+    static void PrintGraph(vector<double> vals, Stats stats, ushort DP = 3, float height = 0.3){
         auto size = GetSize();
         int Swidth = size.width;
         int Sheight = size.height * height;
@@ -118,7 +118,7 @@ class localTools{
         // cout << "created " << columns.size() << " columns" << endl;
 
         for (int i = 0; i < vals.size(); i++){
-            float scaled = ReScale(vals[i], stats.max, activeCols - 1);
+            double scaled = ReScale(vals[i], stats.max, activeCols - 1);
             ushort col = floor(scaled);
             // cout << "calculated col " << i << " of " << vals.size() << " , " << vals[i] << " : " << scaled << " : " << col << endl;
             columns[col]++;
@@ -177,28 +177,39 @@ class localTools{
                     }
                 }
                 else if (x == borderFromLeft && y == borderFromBottom){
-                    text += "+";
+                    text += "\u253C";
                 }
                 else if (y == borderFromBottom){
-                    text += "-";
+                    if (x == Mean + borderFromLeft) text += "\u2542";
+                    else if (x == Median + borderFromLeft) text += "\u2542";
+                    else if (x == UQ + borderFromLeft) text += "\u2542";
+                    else if (x == LQ + borderFromLeft) text += "\u2542";
+                    else{
+                        text += "\u2500";
+                    }
                 }
                 else if (x == borderFromLeft){
-                    text += "|";
+                    text += "\u2502";
                 }
                 else{
-                    auto height = ReScale(columns[x - borderFromLeft], colMax, Sheight - borderFromBottom);
+                    auto height = ReScale(columns[x - borderFromLeft - 1], colMax, Sheight - borderFromBottom - 1);
                     int_fast64_t W = floor(height);
                     float F = height - W;
                     // cout << "height: " << height << " , W: " << W << " , F: " << F << " , y: " << y << endl;
-                    if (height > y){
-                        if (y == W){
+                    if (height > y - (borderFromBottom + 1)){
+                        if (y - (borderFromBottom + 1) == W){
+                            if (x == Mean + borderFromLeft) text += "\e[0;34m";
+                            else if (x == Median + borderFromLeft) text += "\e[0;32m";
+                            else if (x == UQ + borderFromLeft) text += "\e[0;33m";
+                            else if (x == LQ + borderFromLeft) text += "\e[0;31m";
                             text += GetBlock(F);
+                            text += "\e[0m";
                         }
                         else{
-                            if (x == Mean + borderFromLeft) text += "\u2592";
-                            else if (x == Median + borderFromLeft) text += "\u2592";
-                            else if (x == UQ + borderFromLeft) text += "\u2592";
-                            else if (x == LQ + borderFromLeft) text += "\u2592";
+                            if (x == Mean + borderFromLeft) text += "\e[0;34m\u2588\e[0m";
+                            else if (x == Median + borderFromLeft) text += "\e[0;32m\u2588\e[0m";
+                            else if (x == UQ + borderFromLeft) text += "\e[0;33m\u2588\e[0m";
+                            else if (x == LQ + borderFromLeft) text += "\e[0;31m\u2588\e[0m";
                             else{
                                 text += "\u2588";
                             }
@@ -215,8 +226,8 @@ class localTools{
 };
 
 int main(){
-    vector<float> vals;
-    vector<float> times;
+    vector<double> vals;
+    vector<double> times;
     auto rnd = new fstRand();
     for (uint i = 0; i < 10000; i++){
         auto start = chrono::high_resolution_clock::now();
