@@ -368,8 +368,16 @@ int main(){
             // overdue, and the loop collapses into redrawing every iteration.
             lastDraw = chrono::steady_clock::now();
         }
-        std::this_thread::sleep_for(REDRAW_INTERVAL);
-
+        
+        if (chrono::steady_clock::now() - lastDraw < REDRAW_INTERVAL){
+            // Sleep until the redraw interval has elapsed, so the next sample
+            // is not immediately overdue. This keeps the redraw rate capped
+            // at 1 / REDRAW_INTERVAL.
+            auto sleepTime = REDRAW_INTERVAL - (chrono::steady_clock::now() - lastDraw);
+            if (sleepTime > chrono::milliseconds(0)){
+                std::this_thread::sleep_for(sleepTime);
+            }
+        }
     }
 
     localTools::HideCursor(false);
