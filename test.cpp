@@ -6,6 +6,7 @@
 #include <sys/ioctl.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <thread>
 
 #define ushort unsigned short
 
@@ -329,7 +330,7 @@ int main(){
     signal(SIGINT, onSignal);
     signal(SIGTERM, onSignal);
 
-    const uint SAMPLES = 100000;
+    const uint SAMPLES = 10000;
     const auto REDRAW_INTERVAL = chrono::milliseconds(10);
 
     vector<double> vals;
@@ -367,6 +368,8 @@ int main(){
             // overdue, and the loop collapses into redrawing every iteration.
             lastDraw = chrono::steady_clock::now();
         }
+        std::this_thread::sleep_for(REDRAW_INTERVAL);
+
     }
 
     localTools::HideCursor(false);
