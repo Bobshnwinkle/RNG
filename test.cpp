@@ -331,7 +331,7 @@ int main(){
     signal(SIGTERM, onSignal);
 
     const uint SAMPLES = 10000;
-    const auto REDRAW_INTERVAL = chrono::milliseconds(10);
+    const auto REDRAW_INTERVAL = chrono::milliseconds(1);
 
     vector<double> vals;
     vector<double> times;
